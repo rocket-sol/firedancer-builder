@@ -27,7 +27,7 @@ USER sol
 
 WORKDIR /home/sol
 
-ENV FIREDANCER_VERSION  v0.302.20104
+ARG FIREDANCER_VERSION=v0.305.20111
 RUN git clone --recurse-submodules https://github.com/firedancer-io/firedancer.git \
   && cd firedancer \
   && git checkout $FIREDANCER_VERSION \
