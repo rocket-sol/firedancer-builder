@@ -1,10 +1,13 @@
-.PHONY: build
+.PHONY: build clean
 
 VERSION ?= $(shell git rev-parse HEAD)
 
 build:
 	mkdir -p build
 	docker build . --output=build
+
+clean:
+	rm -rf build/*
 
 release: firedancer-$(VERSION).tar.xz sha256sum.txt sha256sum.txt.sig
 
