@@ -1,21 +1,24 @@
-.PHONY: build clean
+.PHONY: build clean release
 
-VERSION ?= $(shell git rev-parse HEAD)
+FIREDANCER_VERSION ?= v0.403.20113
 
 build:
 	mkdir -p build
-	docker build . --output=build
+	docker build . --build-arg FIREDANCER_VERSION=$(FIREDANCER_VERSION) --output=build --pull
 
 clean:
 	rm -rf build/*
 
-release: firedancer-$(VERSION).tar.xz sha256sum.txt sha256sum.txt.sig
+release: firedancer-$(FIREDANCER_VERSION).tar.xz sha256sum.txt sha256sum.txt.sig
 
-sha256sum.txt: firedancer-$(VERSION).tar.xz
-	sha256sum firedancer-$(VERSION).tar.xz > sha256sum.txt
+publish: release
+	gh release create --generate-notes $(FIREDANCER_VERSION) firedancer-$(FIREDANCER_VERSION).tar.xz sha256sum.txt sha256sum.txt.sig
+
+sha256sum.txt: firedancer-$(FIREDANCER_VERSION).tar.xz
+	sha256sum firedancer-$(FIREDANCER_VERSION).tar.xz > sha256sum.txt
 
 sha256sum.txt.sig: sha256sum.txt
 	gpg --detach-sign $^
 
-firedancer-$(VERSION).tar.xz:
+firedancer-$(FIREDANCER_VERSION).tar.xz:
 	tar cvJf $@ -C build .

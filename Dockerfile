@@ -1,4 +1,4 @@
-FROM ubuntu:jammy as build
+FROM ubuntu:jammy AS build
 
 RUN --mount=type=cache,dst=/var/lib/apt apt-get update && apt-get install -y \
   autoconf \
@@ -27,25 +27,11 @@ USER sol
 
 WORKDIR /home/sol
 
-ARG FIREDANCER_VERSION=v0.305.20111
+ARG FIREDANCER_VERSION=v0.403.20113
 RUN git clone --recurse-submodules https://github.com/firedancer-io/firedancer.git \
   && cd firedancer \
   && git checkout $FIREDANCER_VERSION \
   && git submodule update
-
-RUN cd firedancer && patch -p1 <<'EOF'
---- a/deps.sh
-+++ b/deps.sh
-@@ -85,7 +85,7 @@ checkout_repo () {
-     echo "[~] Skipping $1 fetch as \"$PREFIX/git/$1\" already exists"
-   elif [[ -z "$3" ]]; then
-     echo "[+] Cloning $1 from $2"
--    git -c advice.detachedHead=false clone "$2" "$PREFIX/git/$1" && cd "$1" && git reset --hard "$4"
-+    git -c advice.detachedHead=false clone "$2" "$PREFIX/git/$1" && cd "$PREFIX/git/$1" && git reset --hard "$4" && cd -
-     echo
-   else
-     echo "[+] Cloning $1 from $2"
-EOF
 
 RUN cd firedancer && patch -p1 <<'EOF'
 --- a/deps.sh
@@ -62,13 +48,13 @@ RUN cd firedancer && patch -p1 <<'EOF'
 EOF
 
 
-RUN cd firedancer \
+RUN --mount=type=cache,target=$HOME/.cargo cd firedancer \
   && FD_AUTO_INSTALL_PACKAGES=1 ./deps.sh fetch check install
 
-RUN . .cargo/env && cd firedancer &&  MACHINE=linux_gcc_x86_64 make -j $(nproc) fddev fdctl solana
-RUN . .cargo/env && cd firedancer &&  MACHINE=linux_gcc_x86_64 make -j $(nproc) all
+RUN --mount=type=cache,target=$HOME/.cargo . .cargo/env && cd firedancer &&  MACHINE=linux_gcc_x86_64 make -j $(nproc) fddev fdctl solana
+RUN --mount=type=cache,target=$HOME/.cargo . .cargo/env && cd firedancer &&  MACHINE=linux_gcc_x86_64 make -j $(nproc) all
 
-FROM ubuntu:jammy as ubuntu
+FROM ubuntu:jammy AS ubuntu
 COPY --from=build /home/sol/firedancer/build/linux/gcc/x86_64/bin/ /opt/firedancer/bin/
 ENTRYPOINT ["/opt/firedancer/bin/fdctl"]
 
