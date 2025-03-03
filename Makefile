@@ -4,7 +4,8 @@ FIREDANCER_VERSION ?= v0.403.20113
 
 build:
 	mkdir -p build
-	docker build . --build-arg FIREDANCER_VERSION=$(FIREDANCER_VERSION) --output=build --pull
+	# Useful debug options: --progress=plain --load --target source --no-cache
+	docker build . --build-arg FIREDANCER_VERSION=$(FIREDANCER_VERSION) --pull --output=build
 
 clean:
 	rm -rf build/*
