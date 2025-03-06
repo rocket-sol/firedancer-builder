@@ -1,6 +1,7 @@
 .PHONY: build clean release
 
-FIREDANCER_VERSION ?= v0.403.20113
+# renovate: datasource=github-releases packageName=firedancer-io/firedancer
+FIREDANCER_VERSION ?= v0.404.20113
 
 build:
 	mkdir -p build
