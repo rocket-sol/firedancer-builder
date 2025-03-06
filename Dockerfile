@@ -1,4 +1,4 @@
-FROM ubuntu:jammy AS source
+FROM ubuntu:noble AS source
 
 RUN --mount=type=cache,dst=/var/lib/apt apt-get update && apt-get install -y \
   autoconf \
@@ -69,7 +69,7 @@ RUN --mount=type=cache,target=$HOME/.cargo cd firedancer \
 RUN --mount=type=cache,target=$HOME/.cargo . .cargo/env && cd firedancer &&  MACHINE=linux_gcc_x86_64 make -j $(nproc) fddev fdctl solana
 RUN --mount=type=cache,target=$HOME/.cargo . .cargo/env && cd firedancer &&  MACHINE=linux_gcc_x86_64 make -j $(nproc) all
 
-FROM ubuntu:jammy AS ubuntu
+FROM ubuntu:noble AS ubuntu
 COPY --from=build /home/sol/firedancer/build/linux/gcc/x86_64/bin/ /opt/firedancer/bin/
 ENTRYPOINT ["/opt/firedancer/bin/fdctl"]
 
