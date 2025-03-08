@@ -1,0 +1,11 @@
+--- a/deps.sh
++++ b/deps.sh
+@@ -85,7 +85,7 @@ checkout_repo () {
+     echo "[~] Skipping $1 fetch as \"$PREFIX/git/$1\" already exists"
+   elif [[ -z "$3" ]]; then
+     echo "[+] Cloning $1 from $2"
+-    git -c advice.detachedHead=false clone "$2" "$PREFIX/git/$1" && cd "$PREFIX/git/$1" && git reset --hard "$4"
++    git -c advice.detachedHead=false clone "$2" "$PREFIX/git/$1" && git -C "$PREFIX/git/$1" reset --hard "$4"
+     echo
+   else
+     echo "[+] Cloning $1 from $2"
