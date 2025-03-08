@@ -33,33 +33,8 @@ RUN git clone --recurse-submodules https://github.com/firedancer-io/firedancer.g
   && git checkout $FIREDANCER_VERSION \
   && git submodule update --init
 
-RUN cd firedancer && patch -p1 <<'EOF'
---- a/deps.sh
-+++ b/deps.sh
-@@ -85,7 +85,7 @@ checkout_repo () {
-     echo "[~] Skipping $1 fetch as \"$PREFIX/git/$1\" already exists"
-   elif [[ -z "$3" ]]; then
-     echo "[+] Cloning $1 from $2"
--    git -c advice.detachedHead=false clone "$2" "$PREFIX/git/$1" && cd "$PREFIX/git/$1" && git reset --hard "$4"
-+    git -c advice.detachedHead=false clone "$2" "$PREFIX/git/$1" && git -C "$PREFIX/git/$1" reset --hard "$4"
-     echo
-   else
-     echo "[+] Cloning $1 from $2"
-EOF
-
-RUN cd firedancer && patch -p1 <<'EOF'
---- a/deps.sh
-+++ b/deps.sh
-@@ -279,7 +279,7 @@ check () {
- 
-   if [[ ! -x "$(command -v cargo)" ]]; then
-     echo "[!] cargo is not in PATH"
--    source "$HOME/.cargo/env" || true
-+    [[ -r "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
-   fi
-   if [[ ! -x "$(command -v cargo)" ]]; then
-     if [[ "${FD_AUTO_INSTALL_PACKAGES:-}" == "1" ]]; then
-EOF
+COPY patches patches
+RUN cat patches/*.patch | patch --directory firedancer --forward --strip 1
 
 
 FROM source AS build

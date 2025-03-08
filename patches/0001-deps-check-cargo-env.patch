@@ -1,0 +1,11 @@
+--- a/deps.sh
++++ b/deps.sh
+@@ -279,7 +279,7 @@ check () {
+ 
+   if [[ ! -x "$(command -v cargo)" ]]; then
+     echo "[!] cargo is not in PATH"
+-    source "$HOME/.cargo/env" || true
++    [[ -r "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
+   fi
+   if [[ ! -x "$(command -v cargo)" ]]; then
+     if [[ "${FD_AUTO_INSTALL_PACKAGES:-}" == "1" ]]; then
