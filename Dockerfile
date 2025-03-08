@@ -66,8 +66,10 @@ FROM source AS build
 RUN --mount=type=cache,target=$HOME/.cargo cd firedancer \
   && FD_AUTO_INSTALL_PACKAGES=1 ./deps.sh fetch check install
 
-RUN --mount=type=cache,target=$HOME/.cargo . .cargo/env && cd firedancer &&  MACHINE=linux_gcc_x86_64 make -j $(nproc) fddev fdctl solana
-RUN --mount=type=cache,target=$HOME/.cargo . .cargo/env && cd firedancer &&  MACHINE=linux_gcc_x86_64 make -j $(nproc) all
+ARG JOBS_NUM=4
+RUN --mount=type=cache,target=$HOME/.cargo . .cargo/env && cd firedancer &&  MACHINE=linux_gcc_x86_64 make -j $JOBS_NUM fddev fdctl solana
+# Bug: err undeclared in src/choreo/forks/fd_forks.c, fixed in https://github.com/firedancer-io/firedancer/commit/99009cd869e1be8d5aa4bebed05555cc81719981
+# RUN --mount=type=cache,target=$HOME/.cargo . .cargo/env && cd firedancer &&  MACHINE=linux_gcc_x86_64 make -j $JOBS_NUM all
 
 FROM ubuntu:jammy AS ubuntu
 COPY --from=build /home/sol/firedancer/build/linux/gcc/x86_64/bin/ /opt/firedancer/bin/
