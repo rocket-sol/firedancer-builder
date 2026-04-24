@@ -1,4 +1,4 @@
-FROM ubuntu:jammy AS source
+FROM ubuntu:resolute AS source
 
 RUN --mount=type=cache,dst=/var/lib/apt apt-get update && apt-get install -y \
   autoconf \
@@ -71,7 +71,7 @@ RUN --mount=type=cache,target=$HOME/.cargo . .cargo/env && cd firedancer &&  MAC
 # Bug: err undeclared in src/choreo/forks/fd_forks.c, fixed in https://github.com/firedancer-io/firedancer/commit/99009cd869e1be8d5aa4bebed05555cc81719981
 # RUN --mount=type=cache,target=$HOME/.cargo . .cargo/env && cd firedancer &&  MACHINE=linux_gcc_x86_64 make -j $JOBS_NUM all
 
-FROM ubuntu:jammy AS ubuntu
+FROM ubuntu:resolute AS ubuntu
 COPY --from=build /home/sol/firedancer/build/linux/gcc/x86_64/bin/ /opt/firedancer/bin/
 ENTRYPOINT ["/opt/firedancer/bin/fdctl"]
 
